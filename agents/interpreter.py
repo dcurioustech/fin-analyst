@@ -102,15 +102,15 @@ class RuleBasedInterpreter(BaseInterpreter):
             'general motors': 'GM'
         }
         
-        # Analysis type keywords
+        # Analysis type keywords (order matters - more specific first)
         self.analysis_keywords = {
-            'profile': ['profile', 'company', 'info', 'information', 'about', 'overview', 'summary'],
-            'metrics': ['metrics', 'ratios', 'financial', 'performance', 'valuation', 'key metrics'],
-            'comparison': ['compare', 'comparison', 'vs', 'versus', 'against', 'peer', 'competitors'],
             'income_statement': ['income', 'revenue', 'earnings', 'profit', 'income statement'],
             'balance_sheet': ['balance', 'assets', 'liabilities', 'equity', 'balance sheet'],
             'cash_flow': ['cash', 'flow', 'cashflow', 'cash flow'],
-            'recommendations': ['recommendations', 'analyst', 'rating', 'target', 'price target']
+            'recommendations': ['recommendations', 'analyst', 'rating', 'target', 'price target'],
+            'comparison': ['compare', 'comparison', 'vs', 'versus', 'against', 'peer', 'competitors'],
+            'metrics': ['metrics', 'ratios', 'performance', 'valuation', 'key metrics'],
+            'profile': ['profile', 'company', 'info', 'information', 'about', 'overview', 'summary', 'financials']
         }
         
         # Ticker symbol pattern
@@ -161,15 +161,62 @@ class RuleBasedInterpreter(BaseInterpreter):
         """Extract company ticker symbols from user input."""
         companies = []
         
-        # Find ticker symbols using regex
-        potential_tickers = self.ticker_pattern.findall(user_input.upper())
-        companies.extend(potential_tickers)
+        # Common words that are NOT ticker symbols but match the pattern
+        # Include common English words, prepositions, articles, etc.
+        false_positive_words = {
+            # Common prepositions and articles
+            'FOR', 'THE', 'AND', 'BUT', 'NOT', 'YOU', 'ALL', 'CAN', 'HAD', 'HER', 'WAS', 'ONE', 
+            'OUR', 'OUT', 'DAY', 'GET', 'HAS', 'HIM', 'HIS', 'HOW', 'ITS', 'MAY', 'NEW', 'NOW', 
+            'OLD', 'SEE', 'TWO', 'WHO', 'BOY', 'DID', 'LET', 'PUT', 'SAY', 'SHE', 'TOO', 
+            'USE', 'WAY', 'WHY', 'WIN', 'YES', 'YET', 'BIG', 'END', 'FAR', 'FEW', 'GOT', 'LOT',
+            'MAN', 'OWN', 'RUN', 'SET', 'TOP', 'TRY', 'ASK', 'BAD', 'BAG', 'BED', 'BOX', 'BUY',
+            'CAR', 'CUT', 'EAR', 'EYE', 'FUN', 'GUN', 'JOB', 'KEY', 'LAW', 'LEG', 'MAP', 'MOM',
+            'POP', 'RED', 'SIT', 'SIX', 'SUN', 'TAX', 'TEA', 'TEN', 'VAN', 'WAR', 'ZIP',
+            # Common words in financial queries
+            'SHOW', 'WHAT', 'TELL', 'GIVE', 'FIND', 'LOOK', 'INFO', 'DATA', 'HELP', 'ABOUT',
+            'FROM', 'WITH', 'THAT', 'THIS', 'THEY', 'THEM', 'THAN', 'WHEN', 'WHERE', 'WHICH',
+            'WILL', 'WOULD', 'COULD', 'SHOULD', 'MIGHT', 'MUST', 'SHALL', 'OUGHT', 'NEED',
+            'WANT', 'LIKE', 'LOVE', 'HATE', 'KNOW', 'THINK', 'FEEL', 'SEEM', 'LOOK', 'SOUND',
+            'MAKE', 'TAKE', 'COME', 'GIVE', 'KEEP', 'TURN', 'MOVE', 'PLAY', 'WORK', 'LIVE',
+            'SHEET', 'FLOW', 'CASH', 'DEBT', 'RISK', 'RATE', 'YEAR', 'TIME', 'WEEK', 'MONTH',
+            'HIGH', 'LOW', 'GOOD', 'BEST', 'LAST', 'NEXT', 'FIRST', 'FINAL', 'TOTAL', 'FULL',
+            'QUICK', 'FAST', 'SLOW', 'LONG', 'SHORT', 'SMALL', 'LARGE', 'GREAT', 'REAL', 'TRUE',
+            # Additional common words
+            'ARE', 'IS', 'BE', 'BEEN', 'BEING', 'HAVE', 'HAS', 'HAD', 'DO', 'DOES', 'DID', 'DONE',
+            'WILL', 'WOULD', 'COULD', 'SHOULD', 'MAY', 'MIGHT', 'MUST', 'CAN', 'CANT', 'WONT',
+            'ME', 'MY', 'MINE', 'WE', 'US', 'OURS', 'THEY', 'THEM', 'THEIR', 'THEIRS',
+            # Company name words that aren't tickers
+            'INTEL', 'APPLE', 'GOOGLE', 'AMAZON', 'TESLA', 'MICROSOFT', 'META', 'NVIDIA'
+        }
         
-        # Find company names
+        # Find company names first (more reliable)
+        found_company_names = []
         for company_name, ticker in self.company_mappings.items():
             if company_name in user_input_lower:
                 if ticker not in companies:
                     companies.append(ticker)
+                    found_company_names.append(company_name)
+        
+        # Find ticker symbols using regex, but filter out false positives
+        potential_tickers = self.ticker_pattern.findall(user_input.upper())
+        for ticker in potential_tickers:
+            # Skip if it's a common word that's not a ticker
+            if ticker in false_positive_words:
+                continue
+            
+            # Skip if we already found this company by name
+            ticker_company_name = None
+            for name, mapped_ticker in self.company_mappings.items():
+                if mapped_ticker == ticker:
+                    ticker_company_name = name
+                    break
+            
+            if ticker_company_name and ticker_company_name in found_company_names:
+                continue  # Already added this company by name
+            
+            # Add the ticker if it's not already in the list
+            if ticker not in companies:
+                companies.append(ticker)
         
         # Handle pronouns and context references
         if not companies and context:

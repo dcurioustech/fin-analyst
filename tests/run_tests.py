@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """
 Test runner for the Financial Analysis Bot test suite.
+Supports both pytest and unittest execution.
 """
 import unittest
 import sys
 import os
+import subprocess
 from io import StringIO
 
 # Add the parent directory to the path so we can import our modules
@@ -142,6 +144,24 @@ def run_specific_tests(test_pattern, verbose=False):
     return result.wasSuccessful()
 
 
+def run_with_pytest(args_list=None):
+    """Run tests using pytest."""
+    print("🧪 Running tests with pytest...")
+    
+    # Build pytest command
+    cmd = ['python', '-m', 'pytest', 'tests/']  # Always run from tests directory
+    
+    if args_list:
+        cmd.extend(args_list)
+    
+    try:
+        result = subprocess.run(cmd, cwd=os.path.dirname(os.path.dirname(__file__)))
+        return result.returncode == 0
+    except Exception as e:
+        print(f"Error running pytest: {e}")
+        return False
+
+
 def main():
     """Main test runner function."""
     import argparse
@@ -153,16 +173,40 @@ def main():
                        help='Run tests for specific module (e.g., tests.test_utils)')
     parser.add_argument('--pattern', '-p', type=str,
                        help='Run tests matching pattern (e.g., tests.test_utils.TestFormatters)')
+    parser.add_argument('--pytest', action='store_true',
+                       help='Use pytest instead of unittest (recommended)')
+    parser.add_argument('--coverage', action='store_true',
+                       help='Run with coverage report (pytest only)')
     
     args = parser.parse_args()
     
-    if args.pattern:
-        success = run_specific_tests(args.pattern, args.verbose)
-    elif args.module:
-        result = run_test_module(args.module, args.verbose)
-        success = result and not (result.failures or result.errors)
+    # Use pytest if requested or if no specific unittest options are given
+    if args.pytest or (not args.module and not args.pattern):
+        pytest_args = []
+        
+        if args.verbose:
+            pytest_args.append('-v')
+        
+        if args.coverage:
+            pytest_args.extend(['--cov=.', '--cov-report=html', '--cov-report=term-missing'])
+        
+        if args.module:
+            # Convert module path to file path for pytest
+            module_path = args.module.replace('.', '/') + '.py'
+            pytest_args.append(module_path)
+        elif args.pattern:
+            pytest_args.extend(['-k', args.pattern])
+        
+        success = run_with_pytest(pytest_args)
     else:
-        success = run_all_tests(args.verbose)
+        # Fall back to unittest
+        if args.pattern:
+            success = run_specific_tests(args.pattern, args.verbose)
+        elif args.module:
+            result = run_test_module(args.module, args.verbose)
+            success = result and not (result.failures or result.errors)
+        else:
+            success = run_all_tests(args.verbose)
     
     sys.exit(0 if success else 1)
 

@@ -230,20 +230,42 @@ class ComparisonAnalyzer:
                 higher_is_better = self._is_higher_better(column)
                 
                 if higher_is_better:
+                    # For higher-is-better metrics: rank 1 = highest value
                     rank = (column_values > main_value).sum() + 1
-                    percentile = ((column_values <= main_value).sum() / len(column_values)) * 100
+                    # Percentile: what % of values are <= this value
+                    percentile = ((column_values < main_value).sum() / len(column_values)) * 100
                 else:
+                    # For lower-is-better metrics: rank 1 = lowest value  
                     rank = (column_values < main_value).sum() + 1
-                    percentile = ((column_values >= main_value).sum() / len(column_values)) * 100
+                    # Percentile: what % of values are >= this value (inverted for lower-is-better)
+                    percentile = ((column_values > main_value).sum() / len(column_values)) * 100
                 
                 positioning['rankings'][column] = f"{rank} of {len(column_values)}"
                 positioning['percentile_rankings'][column] = f"{percentile:.0f}th percentile"
                 
-                # Identify strengths and weaknesses
-                if percentile >= 75:
-                    positioning['strengths'].append(f"Strong {column.lower()}")
-                elif percentile <= 25:
-                    positioning['weaknesses'].append(f"Weak {column.lower()}")
+                # Identify strengths and weaknesses based on percentile ranking
+                # For 2-company comparisons, use 50% threshold; for larger groups use 75%/25%
+                if len(column_values) == 2:
+                    # For head-to-head comparisons, use 50% threshold
+                    strength_threshold = 50
+                    weakness_threshold = 50
+                else:
+                    # For larger groups, use quartile thresholds
+                    strength_threshold = 75
+                    weakness_threshold = 25
+                
+                if percentile > strength_threshold:
+                    # Better performance
+                    if higher_is_better:
+                        positioning['strengths'].append(f"Strong {column.lower()}")
+                    else:
+                        positioning['strengths'].append(f"Strong {column.lower()} (attractive valuation)")
+                elif percentile < weakness_threshold:
+                    # Worse performance
+                    if higher_is_better:
+                        positioning['weaknesses'].append(f"Weak {column.lower()}")
+                    else:
+                        positioning['weaknesses'].append(f"Weak {column.lower()} (expensive valuation)")
             
             return {
                 'success': True,
@@ -327,25 +349,30 @@ class ComparisonAnalyzer:
         """
         # Metrics where higher is better
         higher_better = [
-            'market cap', 'profit margin', 'roe', 'return'
+            'market cap', 'profit margin', 'roe', 'return on equity', 'return on assets',
+            'revenue growth', 'earnings growth', 'gross margin', 'operating margin',
+            'free cash flow', 'current ratio', 'quick ratio'
         ]
         
-        # Metrics where lower is better
+        # Metrics where lower is better (valuation ratios, debt ratios, etc.)
         lower_better = [
-            'p/e', 'p/s', 'p/b', 'ratio', 'debt'
+            'p/e', 'p/s', 'p/b', 'price to earnings', 'price to sales', 'price to book',
+            'pe ratio', 'ps ratio', 'pb ratio', 'debt to equity', 'debt/equity',
+            'debt ratio', 'beta', 'peg ratio'
         ]
         
         metric_lower = metric_name.lower()
+        
+        # Check lower_better first since these are more specific
+        for term in lower_better:
+            if term in metric_lower:
+                return False
         
         for term in higher_better:
             if term in metric_lower:
                 return True
         
-        for term in lower_better:
-            if term in metric_lower:
-                return False
-        
-        # Default to higher is better
+        # Default to higher is better for unknown metrics
         return True
     
     def _generate_comparison_summary(self, main_ticker: str, 

@@ -1,5 +1,9 @@
 # Financial Analysis Bot with LangGraph Integration
 
+![Test Suite](https://github.com/YOUR_USERNAME/YOUR_REPO/workflows/Test%20Suite/badge.svg)
+![CI/CD Pipeline](https://github.com/YOUR_USERNAME/YOUR_REPO/workflows/CI%2FCD%20Pipeline/badge.svg)
+[![Coverage](https://codecov.io/gh/YOUR_USERNAME/YOUR_REPO/branch/main/graph/badge.svg)](https://codecov.io/gh/YOUR_USERNAME/YOUR_REPO)
+
 A sophisticated financial analysis tool that combines rule-based analysis with an orchestrated LangGraph workflow for intelligent financial data processing and insights.
 
 ## 🚀 Features
@@ -115,9 +119,35 @@ print(result['agent_response'])
 
 ## 🧪 Testing
 
-The project includes comprehensive test suites:
+The project includes comprehensive test suites with both pytest and unittest support:
 
-### Run All Tests
+### Run All Tests with pytest (Recommended)
+```bash
+# Run all tests
+pytest
+
+# Run with verbose output
+pytest -v
+
+# Run with coverage report
+pytest --cov=. --cov-report=html --cov-report=term-missing
+
+# Run specific test file
+pytest tests/test_utils.py
+
+# Run tests matching a pattern
+pytest -k "test_format"
+
+# Using the convenience script
+python run_pytest.py
+
+# Using Makefile
+make test
+make test-verbose
+make test-coverage
+```
+
+### Alternative: Legacy Test Scripts
 ```bash
 # Core component tests (no LangGraph dependencies required)
 python3 test_orchestrator_comprehensive.py
@@ -130,6 +160,9 @@ python3 test_integration_flow.py
 
 # Legacy analysis tests
 python3 test_suite_simple.py
+
+# Using the unified test runner
+python tests/run_tests.py --pytest
 ```
 
 ### Test Coverage
@@ -173,6 +206,46 @@ LOG_LEVEL=INFO
 - **Modify response templates**: Update `agents/response_generator.py`
 - **Add new data sources**: Extend `services/financial_data_service.py`
 - **Customize orchestrator workflow**: Modify `agents/graph.py` and `agents/nodes.py`
+
+## 🔄 CI/CD and Development
+
+### Continuous Integration
+
+This project uses GitHub Actions for automated testing and deployment:
+
+- **Test Suite**: Runs on every push and pull request
+- **Code Quality**: Automated linting and formatting checks  
+- **Security Scanning**: Vulnerability detection with bandit and safety
+- **Multi-version Testing**: Python 3.9-3.12 compatibility
+- **Coverage Reporting**: Automated coverage analysis
+
+### Development Commands
+
+```bash
+# Run tests as they run in CI
+make ci-test
+
+# Run linting checks
+make ci-lint
+
+# Run security scans
+make ci-security
+
+# Build Docker image
+make docker-build
+
+# Run container locally
+make docker-run
+```
+
+### GitHub Workflows
+
+- **`test.yml`**: Fast test execution for immediate feedback
+- **`pr-check.yml`**: Pull request validation
+- **`ci.yml`**: Comprehensive CI pipeline
+- **`release.yml`**: Automated deployment to production
+
+For detailed CI/CD setup instructions, see [docs/CI_CD_SETUP.md](docs/CI_CD_SETUP.md).
 
 ## 🐛 Troubleshooting
 
