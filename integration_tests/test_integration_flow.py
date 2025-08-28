@@ -29,12 +29,16 @@ def test_complete_data_flow():
 
     try:
         from agents.interpreter import default_interpreter
-        from agents.response_generator import (ResponseContext,
-                                               default_response_generator)
-        from agents.state import (create_initial_state,
-                                  update_state_with_user_input)
-        from agents.tools import (analyze_company_profile, get_company_data,
-                                  validate_ticker)
+        from agents.response_generator import (
+            ResponseContext,
+            default_response_generator,
+        )
+        from agents.state import create_initial_state, update_state_with_user_input
+        from agents.tools import (
+            analyze_company_profile,
+            get_company_data,
+            validate_ticker,
+        )
 
         # Test case: Single company analysis flow
         print("\n📋 Test: Complete Single Company Analysis Flow")
@@ -137,10 +141,12 @@ def test_all_analysis_types():
 
     try:
         from agents.interpreter import default_interpreter
-        from agents.tools import (analyze_company_profile,
-                                  analyze_financial_metrics,
-                                  analyze_financial_statements,
-                                  compare_companies)
+        from agents.tools import (
+            analyze_company_profile,
+            analyze_financial_metrics,
+            analyze_financial_statements,
+            compare_companies,
+        )
 
         # Test cases for different analysis types (using only ticker symbols to avoid interpreter issues)
         test_cases = [
@@ -277,8 +283,7 @@ def test_layer_integration():
         # Test 1: Interpreter → State Management
         print("\n📋 Test 1: Interpreter → State Management Integration")
         from agents.interpreter import default_interpreter
-        from agents.state import (create_initial_state,
-                                  update_state_with_user_input)
+        from agents.state import create_initial_state, update_state_with_user_input
 
         interpretation = default_interpreter.interpret_request("Analyze AAPL")
         state = create_initial_state()
@@ -308,8 +313,10 @@ def test_layer_integration():
 
         # Test 3: Tools → Response Generation Integration
         print("\n📋 Test 3: Tools → Response Generation Integration")
-        from agents.response_generator import (ResponseContext,
-                                               default_response_generator)
+        from agents.response_generator import (
+            ResponseContext,
+            default_response_generator,
+        )
 
         response_context = ResponseContext()
         response_context.analysis_type = state.get("analysis_type")
@@ -374,8 +381,11 @@ def test_analysis_quality_regression():
 
     try:
         # Test direct analysis tools vs orchestrated workflow
-        from agents.tools import (analyze_company_profile, get_company_data,
-                                  validate_ticker)
+        from agents.tools import (
+            analyze_company_profile,
+            get_company_data,
+            validate_ticker,
+        )
 
         print("\n📋 Test: Direct Tool Analysis Quality")
 

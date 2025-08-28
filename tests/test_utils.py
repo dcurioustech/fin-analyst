@@ -7,10 +7,13 @@ from unittest.mock import MagicMock, patch
 
 import pandas as pd
 
-from utils.error_handling import (RetryHandler, setup_logging,
-                                  validate_ticker_symbol)
-from utils.formatters import (format_currency, format_large_number,
-                              format_percentage, format_ratio)
+from utils.error_handling import RetryHandler, setup_logging, validate_ticker_symbol
+from utils.formatters import (
+    format_currency,
+    format_large_number,
+    format_percentage,
+    format_ratio,
+)
 from utils.input_validation import InputValidator
 from utils.visualizations import create_comparison_chart, plot_text_bar
 

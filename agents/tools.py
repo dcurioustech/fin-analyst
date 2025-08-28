@@ -15,6 +15,7 @@ from analysis.company_analyzer import CompanyAnalyzer
 from analysis.comparison_analyzer import ComparisonAnalyzer
 from analysis.metrics_analyzer import MetricsAnalyzer
 from analysis.statement_analyzer import StatementAnalyzer
+
 # Import our existing services and analyzers
 from services.financial_data_service import FinancialDataService
 

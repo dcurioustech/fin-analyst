@@ -10,17 +10,29 @@ from typing import Any, Dict
 
 from langgraph.graph import END, StateGraph
 
-from .nodes import (analysis_execution_node, analysis_planning_node,
-                    data_collection_node, final_response_node,
-                    interpreter_routing_node, orchestrator_entry_node,
-                    response_generation_routing_node, response_planning_node,
-                    result_aggregation_node, route_after_analysis,
-                    route_after_data_collection, route_after_interpretation,
-                    route_after_planning, route_response_generation)
+from .nodes import (
+    analysis_execution_node,
+    analysis_planning_node,
+    data_collection_node,
+    final_response_node,
+    interpreter_routing_node,
+    orchestrator_entry_node,
+    response_generation_routing_node,
+    response_planning_node,
+    result_aggregation_node,
+    route_after_analysis,
+    route_after_data_collection,
+    route_after_interpretation,
+    route_after_planning,
+    route_response_generation,
+)
 from .response_generator import default_response_generator
-from .state import (FinancialOrchestratorState, create_initial_state,
-                    update_state_with_agent_response,
-                    update_state_with_user_input)
+from .state import (
+    FinancialOrchestratorState,
+    create_initial_state,
+    update_state_with_agent_response,
+    update_state_with_user_input,
+)
 
 logger = logging.getLogger(__name__)
 

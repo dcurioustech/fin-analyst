@@ -27,8 +27,7 @@ def test_invalid_ticker_recovery():
 
     try:
         from agents.interpreter import default_interpreter
-        from agents.state import (create_initial_state,
-                                  update_state_with_user_input)
+        from agents.state import create_initial_state, update_state_with_user_input
         from agents.tools import validate_ticker
 
         # Test cases with invalid tickers
@@ -162,8 +161,11 @@ def test_system_error_graceful_degradation():
 
     try:
         from agents.response_generator import default_response_generator
-        from agents.state import (create_initial_state, set_error,
-                                  update_state_with_user_input)
+        from agents.state import (
+            create_initial_state,
+            set_error,
+            update_state_with_user_input,
+        )
 
         # Test 1: State corruption recovery
         print("\n📋 Test 1: State Corruption Recovery")

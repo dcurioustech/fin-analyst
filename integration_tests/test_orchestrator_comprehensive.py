@@ -32,8 +32,7 @@ def test_without_langgraph():
     try:
         # Test 1: State management
         print("\n📋 Test 1: State Management")
-        from agents.state import (create_initial_state,
-                                  update_state_with_user_input)
+        from agents.state import create_initial_state, update_state_with_user_input
 
         state = create_initial_state()
         print(f"✅ Initial state created: {list(state.keys())}")
@@ -125,9 +124,11 @@ def test_with_mock_orchestrator():
         # Mock the orchestrator behavior
         from agents.interpreter import default_interpreter
         from agents.response_generator import default_response_generator
-        from agents.state import (create_initial_state,
-                                  update_state_with_agent_response,
-                                  update_state_with_user_input)
+        from agents.state import (
+            create_initial_state,
+            update_state_with_agent_response,
+            update_state_with_user_input,
+        )
 
         def mock_orchestrator_process(user_input: str, state=None):
             """Mock orchestrator processing."""

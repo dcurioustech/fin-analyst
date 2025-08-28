@@ -25,15 +25,21 @@ class TestCoreModules(unittest.TestCase):
             from analysis.statement_analyzer import StatementAnalyzer
             from config.settings import configure_pandas
             from main import FinancialAnalysisApp
+
             # Test services
             from services.financial_data_service import FinancialDataService
             from ui.display_formatter import DisplayFormatter
+
             # Test UI components
             from ui.menu_handler import MenuHandler
             from utils.error_handling import validate_ticker_symbol
+
             # Test utilities
-            from utils.formatters import (format_currency, format_large_number,
-                                          format_percentage)
+            from utils.formatters import (
+                format_currency,
+                format_large_number,
+                format_percentage,
+            )
             from utils.input_validation import InputValidator
             from utils.visualizations import plot_text_bar
 
@@ -68,8 +74,11 @@ class TestCoreModules(unittest.TestCase):
     def test_utility_functions(self):
         """Test utility functions."""
         from utils.error_handling import validate_ticker_symbol
-        from utils.formatters import (format_currency, format_large_number,
-                                      format_percentage)
+        from utils.formatters import (
+            format_currency,
+            format_large_number,
+            format_percentage,
+        )
 
         # Test formatters
         self.assertEqual(format_large_number(1500000000), "1.50 B")

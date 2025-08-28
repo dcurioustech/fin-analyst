@@ -5,8 +5,7 @@ Financial metrics analysis functionality.
 import logging
 from typing import Any, Dict, Optional
 
-from utils.formatters import (format_large_number, format_percentage,
-                              format_ratio)
+from utils.formatters import format_large_number, format_percentage, format_ratio
 
 
 class MetricsAnalyzer:

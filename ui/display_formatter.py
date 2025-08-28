@@ -7,8 +7,7 @@ from typing import Any, Dict, Optional
 
 import pandas as pd
 
-from utils.formatters import (format_large_number, format_percentage,
-                              format_ratio)
+from utils.formatters import format_large_number, format_percentage, format_ratio
 
 
 class DisplayFormatter:

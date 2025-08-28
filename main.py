@@ -10,16 +10,19 @@ from analysis.company_analyzer import CompanyAnalyzer
 from analysis.comparison_analyzer import ComparisonAnalyzer
 from analysis.metrics_analyzer import MetricsAnalyzer
 from analysis.statement_analyzer import StatementAnalyzer
+
 # Import configuration
 from config.settings import configure_pandas
+
 # Import services
 from services.financial_data_service import FinancialDataService
 from ui.display_formatter import DisplayFormatter
+
 # Import UI components
 from ui.menu_handler import MenuHandler
+
 # Import utilities
-from utils.error_handling import (log_operation_end, log_operation_start,
-                                  setup_logging)
+from utils.error_handling import log_operation_end, log_operation_start, setup_logging
 
 
 class FinancialAnalysisApp:
