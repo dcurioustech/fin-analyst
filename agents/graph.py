@@ -6,7 +6,6 @@ the financial analysis workflow with clear layer separation.
 """
 
 import logging
-from typing import Any, Dict
 
 from langgraph.graph import END, StateGraph
 

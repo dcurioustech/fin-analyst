@@ -80,7 +80,7 @@ def test_chat_endpoint(base_url: str, message: str = "Analyze Apple") -> bool:
             try:
                 error_data = response.json()
                 print(f"   Error: {error_data.get('detail', 'Unknown error')}")
-            except:
+            except Exception:
                 print(f"   Error: {response.text}")
             return False
 
@@ -278,7 +278,7 @@ def main():
             else:
                 print("❌ Local server not responding, running local tests only")
                 results = run_comprehensive_test()
-        except:
+        except Exception:
             print("❌ Local server not available, running local tests only")
             results = run_comprehensive_test()
 
