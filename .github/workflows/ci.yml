@@ -126,4 +126,4 @@ jobs:
 
     - name: Test deployment script
       run: |
-        python scripts/test_deployment.py --local-only --skip-web
+        python scripts/test_deployment.py --local-only
