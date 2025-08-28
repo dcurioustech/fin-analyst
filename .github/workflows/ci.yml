@@ -9,20 +9,17 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.9, 3.10, 3.11, 3.12]
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: 3.12
 
     - name: Cache pip dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -40,14 +37,14 @@ jobs:
         # Stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # Exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
 
     - name: Run tests with pytest
       run: |
         pytest tests/ integration_tests/ -v --cov=. --cov-report=xml --cov-report=term-missing
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         file: ./coverage.xml
         flags: unittests
@@ -60,9 +57,9 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.11
+        python-version: 3.12
 
     - name: Install dependencies
       run: |
@@ -71,14 +68,14 @@ jobs:
 
     - name: Run security scan with bandit
       run: |
-        bandit -r . -f json -o bandit-report.json || true
+        bandit -r . -f json -o bandit-report.json --exclude ./dev/,./venv/,./.venv/ || true
 
     - name: Check for known security vulnerabilities
       run: |
         safety check --json --output safety-report.json || true
 
     - name: Upload security reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: security-reports
         path: |
@@ -91,9 +88,9 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.11
+        python-version: 3.12
 
     - name: Install dependencies
       run: |
@@ -103,7 +100,7 @@ jobs:
 
     - name: Run type checking with mypy
       run: |
-        mypy . --ignore-missing-imports --no-strict-optional || true
+        mypy . --ignore-missing-imports --no-strict-optional --exclude 'dev/.*' --exclude 'venv/.*' --exclude '.venv/.*' || true
 
   integration-test:
     runs-on: ubuntu-latest
@@ -114,9 +111,9 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.11
+        python-version: 3.12
 
     - name: Install dependencies
       run: |

@@ -25,10 +25,9 @@ This document explains the Continuous Integration and Continuous Deployment setu
 **Purpose:** Comprehensive quality assurance
 
 **Jobs:**
-- **test**: Multi-version Python testing (3.9-3.12)
-- **security-scan**: Security vulnerability scanning
-- **type-check**: Static type checking with mypy
-- **integration-test**: Full integration testing
+- **test**: Python 3.12 testing with pytest
+- **lint**: Code quality checks with flake8 (excludes dev/ directory)
+- **security**: Security vulnerability scanning with bandit and safety
 
 ### 4. Release and Deploy (`release.yml`)
 **Triggers:** Release published, Manual workflow dispatch

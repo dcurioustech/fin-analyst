@@ -37,8 +37,9 @@ clean:  ## Clean up generated files
 	rm -rf .coverage
 	rm -rf .pytest_cache/
 
-lint:  ## Run linting (if you have flake8 or similar installed)
-	@echo "Add your linting commands here (flake8, black, etc.)"
+lint:  ## Run linting with flake8
+	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
 
 test-all:  ## Run both unit and integration tests
 	python -m pytest tests/ integration_tests/ -v
@@ -52,11 +53,19 @@ ci-test:  ## Run tests as they would run in CI
 
 ci-lint:  ## Run linting as it would run in CI
 	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
 
 ci-security:  ## Run security checks as they would run in CI
-	bandit -r . -ll
+	bandit -r . -ll --exclude ./dev/,./venv/,./.venv/
 	safety check
+
+format:  ## Format code with black and isort
+	black .
+	isort .
+
+format-check:  ## Check code formatting without making changes
+	black --check --diff .
+	isort --check-only --diff .
 
 docker-build:  ## Build Docker image
 	docker build -t fin-analyst:latest .

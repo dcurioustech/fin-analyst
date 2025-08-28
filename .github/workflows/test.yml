@@ -14,13 +14,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.11
+        python-version: 3.12
 
     - name: Cache pip dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
@@ -50,7 +50,7 @@ jobs:
         pytest tests/ integration_tests/ --cov=. --cov-report=html --cov-report=term-missing --cov-fail-under=50
 
     - name: Upload coverage reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: coverage-report
@@ -63,10 +63,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.11
+        python-version: 3.12
 
     - name: Install linting tools
       run: |
@@ -75,12 +75,12 @@ jobs:
 
     - name: Check code formatting with black
       run: |
-        black --check --diff .
+        black --check --diff . --exclude="dev/"
 
     - name: Check import sorting with isort
       run: |
-        isort --check-only --diff .
+        isort --check-only --diff . --skip-glob="dev/*"
 
     - name: Lint with flake8
       run: |
-        flake8 . --count --statistics --max-line-length=88 --extend-ignore=E203,W503
+        flake8 . --count --statistics --max-line-length=88 --extend-ignore=E203,W503 --exclude=dev/

@@ -216,7 +216,7 @@ This project uses GitHub Actions for automated testing and deployment:
 - **Test Suite**: Runs on every push and pull request
 - **Code Quality**: Automated linting and formatting checks  
 - **Security Scanning**: Vulnerability detection with bandit and safety
-- **Multi-version Testing**: Python 3.9-3.12 compatibility
+- **Python 3.12**: Latest Python version compatibility
 - **Coverage Reporting**: Automated coverage analysis
 
 ### Development Commands
