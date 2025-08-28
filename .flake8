@@ -1,0 +1,20 @@
+[flake8]
+max-line-length = 120
+extend-ignore = E203, W503, F401, F541, F841, W293, E402, E501
+exclude = 
+    .git,
+    __pycache__,
+    .pytest_cache,
+    .venv,
+    venv,
+    env,
+    .env,
+    dev/,
+    infrastructure/gcp/terraform/.terraform/,
+    htmlcov/,
+    build/,
+    dist/,
+    *.egg-info/,
+    analysis_bot_original_backup.py,
+    integration_tests/
+max-complexity = 25
