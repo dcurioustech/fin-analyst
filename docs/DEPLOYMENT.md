@@ -1,6 +1,6 @@
 # Financial Analysis Assistant - Deployment Guide
 
-This guide covers deploying the Financial Analysis Assistant to Google Cloud Platform (GCP) with full infrastructure setup.
+This guide covers deploying the Financial Analysis Assistant to Google Cloud Platform (GCP) with full infrastructure setup and enhanced features.
 
 ## Prerequisites
 
@@ -152,6 +152,35 @@ gcloud run deploy financial-analysis-assistant \
     --max-instances 100 \
     --set-env-vars PROJECT_ID=your-project-id
 ```
+
+## GCP Infrastructure Features
+
+### Infrastructure as Code
+- **Terraform Configuration**: Complete infrastructure setup with `infrastructure/gcp/terraform/`
+- **Automated Deployment**: One-command deployment with `infrastructure/gcp/deploy.sh`
+- **Cloud Build**: Automated CI/CD pipeline with `infrastructure/gcp/cloudbuild.yaml`
+
+### GCP Services Integration
+- **Cloud Run**: Serverless hosting with auto-scaling
+- **Firestore**: Session persistence and conversation history
+- **Memorystore (Redis)**: High-performance caching layer
+- **Cloud Storage**: File storage for reports and charts
+- **Secret Manager**: Secure API key management
+- **Cloud Monitoring**: Application observability and alerting
+
+### Enhanced Web Interface
+- **FastAPI Backend**: High-performance async web framework
+- **Real-time Chat**: WebSocket support for instant responses
+- **Session Management**: Persistent conversations across sessions
+- **Responsive Design**: Works on desktop and mobile devices
+
+### API Endpoints
+- `GET /` - Web chat interface
+- `GET /health` - Health check and service status
+- `POST /api/chat` - Chat API for programmatic access
+- `WebSocket /ws/{session_id}` - Real-time chat connection
+- `GET /api/sessions/{session_id}` - Session information
+- `DELETE /api/sessions/{session_id}` - Clear session data
 
 ## Local Development
 
@@ -341,6 +370,24 @@ gcloud run services add-iam-policy-binding financial-analysis-assistant \
 - Service account has minimal required permissions
 - Secrets are accessed at runtime, not stored in container
 
+## Cost Optimization
+
+### Estimated Costs (Monthly)
+
+- **Cloud Run**: $10-50 (depending on usage)
+- **Firestore**: $5-20 (depending on operations)
+- **Redis**: $30-50 (Basic tier)
+- **Cloud Storage**: $1-5 (depending on storage)
+- **Secret Manager**: $1-2
+- **Total**: ~$47-127/month for moderate usage
+
+### Cost Reduction Tips
+
+1. **Use minimum instances**: Set min-instances to 0
+2. **Optimize Redis**: Use smaller instance for development
+3. **Monitor usage**: Set up billing alerts
+4. **Clean up old data**: Implement data retention policies
+
 ## Troubleshooting
 
 ### Common Issues
@@ -381,31 +428,26 @@ gcloud run services update financial-analysis-assistant \
     --set-env-vars LOG_LEVEL=DEBUG
 ```
 
-## Cost Optimization
+## Migration from Previous Version
 
-### Estimated Costs (Monthly)
+### Backward Compatibility
+- **Existing CLI**: Original `main.py` still works unchanged
+- **Analysis Functions**: All existing analysis capabilities preserved
+- **Configuration**: Existing `.env` files compatible
 
-- **Cloud Run**: $10-50 (depending on usage)
-- **Firestore**: $5-20 (depending on operations)
-- **Redis**: $30-50 (Basic tier)
-- **Cloud Storage**: $1-5 (depending on storage)
-- **Secret Manager**: $1-2
-- **Total**: ~$47-127/month for moderate usage
-
-### Cost Reduction Tips
-
-1. **Use minimum instances**: Set min-instances to 0
-2. **Optimize Redis**: Use smaller instance for development
-3. **Monitor usage**: Set up billing alerts
-4. **Clean up old data**: Implement data retention policies
+### New Capabilities
+- **Session Persistence**: Conversations now persist across restarts
+- **Web Access**: Access from any browser, no CLI required
+- **Scalability**: Handle multiple users simultaneously
+- **Cloud Integration**: Professional-grade infrastructure
 
 ## Support
 
-For issues or questions:
-1. Check the logs first
-2. Review this deployment guide
-3. Check the main README.md for application-specific help
-4. Create an issue in the repository
+For deployment-related issues:
+1. Check Cloud Run logs: `gcloud logs read "resource.type=cloud_run_revision"`
+2. Verify service status: `gcloud run services list`
+3. Test health endpoint: `curl https://your-service/health`
+4. Review monitoring dashboards in GCP Console
 
 ## Next Steps
 
