@@ -131,6 +131,7 @@ def test_local_imports() -> bool:
         # Test core imports one by one for better error reporting
         try:
             from agents.state import create_initial_state
+
             print("  ✅ agents.state imported")
         except ImportError as e:
             print(f"  ❌ agents.state import failed: {e}")
@@ -138,6 +139,7 @@ def test_local_imports() -> bool:
 
         try:
             from agents.graph import financial_orchestrator
+
             print("  ✅ agents.graph imported")
         except ImportError as e:
             print(f"  ❌ agents.graph import failed: {e}")
@@ -145,6 +147,7 @@ def test_local_imports() -> bool:
 
         try:
             from config.settings import configure_pandas
+
             print("  ✅ config.settings imported")
         except ImportError as e:
             print(f"  ❌ config.settings import failed: {e}")
@@ -152,6 +155,7 @@ def test_local_imports() -> bool:
 
         try:
             from utils.error_handling import setup_logging
+
             print("  ✅ utils.error_handling imported")
         except ImportError as e:
             print(f"  ❌ utils.error_handling import failed: {e}")
