@@ -12,6 +12,11 @@ import sys
 import time
 from typing import Any, Dict, Optional
 
+# Add project root to Python path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 import requests
 
 
@@ -121,11 +126,36 @@ def test_local_imports() -> bool:
     try:
         print("🔍 Testing local imports...")
 
-        # Test core imports
-        from agents.graph import financial_orchestrator
-        from agents.state import create_initial_state
-        from config.settings import configure_pandas
-        from utils.error_handling import setup_logging
+        # Project root should already be in path from module import
+
+        # Test core imports one by one for better error reporting
+        try:
+            from agents.state import create_initial_state
+            print("  ✅ agents.state imported")
+        except ImportError as e:
+            print(f"  ❌ agents.state import failed: {e}")
+            raise
+
+        try:
+            from agents.graph import financial_orchestrator
+            print("  ✅ agents.graph imported")
+        except ImportError as e:
+            print(f"  ❌ agents.graph import failed: {e}")
+            raise
+
+        try:
+            from config.settings import configure_pandas
+            print("  ✅ config.settings imported")
+        except ImportError as e:
+            print(f"  ❌ config.settings import failed: {e}")
+            raise
+
+        try:
+            from utils.error_handling import setup_logging
+            print("  ✅ utils.error_handling imported")
+        except ImportError as e:
+            print(f"  ❌ utils.error_handling import failed: {e}")
+            raise
 
         print("✅ Core imports successful")
 
@@ -157,6 +187,8 @@ def test_langgraph_functionality() -> bool:
     """Test basic LangGraph functionality."""
     try:
         print("🔍 Testing LangGraph functionality...")
+
+        # Project root should already be in path from module import
 
         from agents.graph import financial_orchestrator
         from agents.state import create_initial_state
@@ -251,6 +283,13 @@ def main():
     )
 
     args = parser.parse_args()
+
+    # Debug information
+    print(f"🔍 Debug info:")
+    print(f"   Current working directory: {os.getcwd()}")
+    print(f"   Project root: {project_root}")
+    print(f"   Python path (first 3): {sys.path[:3]}")
+    print()
 
     if args.local_only:
         print("🏠 Running local tests only...")
