@@ -8,7 +8,9 @@ and prepares for future LLM integration.
 import logging
 import re
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
+
+from utils.nasdaq_100 import is_nasdaq_100_ticker, unsupported_ticker_message
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +25,7 @@ class RequestInterpretation:
         self.confidence: float = 0.0
         self.needs_clarification: bool = False
         self.clarification_message: Optional[str] = None
+        self.out_of_universe_tickers: List[str] = []
         self.raw_input: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
@@ -34,6 +37,7 @@ class RequestInterpretation:
             "confidence": self.confidence,
             "needs_clarification": self.needs_clarification,
             "clarification_message": self.clarification_message,
+            "out_of_universe_tickers": self.out_of_universe_tickers,
             "raw_input": self.raw_input,
         }
 
@@ -175,7 +179,10 @@ class RuleBasedInterpreter(BaseInterpreter):
         user_input_lower = user_input.lower()
 
         # Extract companies
-        interpretation.companies = self._extract_companies(
+        (
+            interpretation.companies,
+            interpretation.out_of_universe_tickers,
+        ) = self._extract_companies(
             user_input, user_input_lower, context
         )
 
@@ -188,7 +195,12 @@ class RuleBasedInterpreter(BaseInterpreter):
         interpretation.confidence = self._calculate_confidence(interpretation)
 
         # Check if clarification is needed
-        if not interpretation.companies and not self._has_context_companies(context):
+        if interpretation.out_of_universe_tickers:
+            interpretation.needs_clarification = True
+            interpretation.clarification_message = unsupported_ticker_message(
+                interpretation.out_of_universe_tickers[0]
+            )
+        elif not interpretation.companies and not self._has_context_companies(context):
             interpretation.needs_clarification = True
             interpretation.clarification_message = (
                 "I'd be happy to help with financial analysis! "
@@ -205,9 +217,10 @@ class RuleBasedInterpreter(BaseInterpreter):
 
     def _extract_companies(
         self, user_input: str, user_input_lower: str, context: Dict[str, Any]
-    ) -> List[str]:
-        """Extract company ticker symbols from user input."""
+    ) -> Tuple[List[str], List[str]]:
+        """Extract supported and out-of-universe ticker symbols from user input."""
         companies = []
+        out_of_universe_tickers = []
 
         # Common words that are NOT ticker symbols but match the pattern
         # Include common English words, prepositions, articles, etc.
@@ -423,15 +436,21 @@ class RuleBasedInterpreter(BaseInterpreter):
         found_company_names = []
         for company_name, ticker in self.company_mappings.items():
             if company_name in user_input_lower:
-                if ticker not in companies:
+                found_company_names.append(company_name)
+                if is_nasdaq_100_ticker(ticker) and ticker not in companies:
                     companies.append(ticker)
-                    found_company_names.append(company_name)
+                elif not is_nasdaq_100_ticker(ticker):
+                    out_of_universe_tickers.append(ticker)
 
         # Find ticker symbols using regex, but filter out false positives
         potential_tickers = self.ticker_pattern.findall(user_input.upper())
         for ticker in potential_tickers:
             # Skip if it's a common word that's not a ticker
             if ticker in false_positive_words:
+                continue
+
+            # The word was already handled as a known company name above.
+            if ticker.lower() in found_company_names:
                 continue
 
             # Skip if we already found this company by name
@@ -443,6 +462,10 @@ class RuleBasedInterpreter(BaseInterpreter):
 
             if ticker_company_name and ticker_company_name in found_company_names:
                 continue  # Already added this company by name
+
+            if not is_nasdaq_100_ticker(ticker):
+                out_of_universe_tickers.append(ticker)
+                continue
 
             # Add the ticker if it's not already in the list
             if ticker not in companies:
@@ -457,7 +480,7 @@ class RuleBasedInterpreter(BaseInterpreter):
             ):
                 companies = context_companies.copy()
 
-        return companies
+        return companies, list(dict.fromkeys(out_of_universe_tickers))
 
     def _determine_analysis_type(
         self, user_input_lower: str, companies: List[str]

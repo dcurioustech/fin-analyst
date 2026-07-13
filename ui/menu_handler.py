@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional
 
 from config.settings import MENU_OPTIONS
 from utils.error_handling import RetryHandler, validate_ticker_symbol
+from utils.nasdaq_100 import unsupported_ticker_message
 
 
 class MenuHandler:
@@ -80,9 +81,7 @@ class MenuHandler:
                     continue
 
                 if not validate_ticker_symbol(ticker):
-                    print(
-                        "Invalid ticker format. Ticker should be 1-10 letters only (e.g., AAPL, MSFT)."
-                    )
+                    print(unsupported_ticker_message(ticker))
                     attempt += 1
                     continue
 
@@ -137,7 +136,8 @@ class MenuHandler:
 
                 if invalid_peers:
                     print(
-                        f"Warning: Invalid ticker symbols ignored: {', '.join(invalid_peers)}"
+                        "Warning: Non-NASDAQ-100 tickers ignored: "
+                        f"{', '.join(invalid_peers)}"
                     )
 
                 if not valid_peers:

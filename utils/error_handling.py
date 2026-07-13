@@ -8,6 +8,8 @@ from datetime import datetime
 from functools import wraps
 from typing import Any, Dict, Optional
 
+from utils.nasdaq_100 import is_nasdaq_100_ticker
+
 
 class ErrorResponse:
     """Standardized error response format."""
@@ -192,7 +194,7 @@ def validate_ticker_symbol(ticker: str) -> bool:
     if not ticker.isalpha():
         return False
 
-    return True
+    return is_nasdaq_100_ticker(ticker)
 
 
 def create_success_response(data: Any, message: str = None) -> Dict[str, Any]:
