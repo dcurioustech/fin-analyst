@@ -4,7 +4,9 @@
 ![CI/CD Pipeline](https://github.com/YOUR_USERNAME/YOUR_REPO/workflows/CI%2FCD%20Pipeline/badge.svg)
 [![Coverage](https://codecov.io/gh/YOUR_USERNAME/YOUR_REPO/branch/main/graph/badge.svg)](https://codecov.io/gh/YOUR_USERNAME/YOUR_REPO)
 
-An intelligent financial analysis assistant that provides comprehensive company analysis, financial metrics, and market insights through natural language conversations.
+An intelligent financial analysis assistant for current NASDAQ-100 constituents. It provides comprehensive company analysis, financial metrics, and market insights through natural language conversations.
+
+> Scope: requests are limited to the maintained NASDAQ-100 constituent snapshot. Tickers outside that universe are rejected before any market-data request is made.
 
 ## 🚀 Quick Start
 

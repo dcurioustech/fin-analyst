@@ -9,6 +9,8 @@ from typing import Any, Dict, Optional, Union
 import pandas as pd
 import yfinance as yf
 
+from utils.nasdaq_100 import is_nasdaq_100_ticker, unsupported_ticker_message
+
 
 class FinancialDataService:
     """Service class for accessing financial data from external APIs."""
@@ -30,6 +32,10 @@ class FinancialDataService:
         if not ticker or not isinstance(ticker, str):
             return False
 
+        if not is_nasdaq_100_ticker(ticker):
+            self.logger.info("Rejected out-of-universe ticker: %s", ticker)
+            return False
+
         try:
             stock = yf.Ticker(ticker.upper())
             info = stock.info
@@ -49,6 +55,13 @@ class FinancialDataService:
         Returns:
             Dictionary containing company info or error information
         """
+        if not is_nasdaq_100_ticker(ticker):
+            return {
+                "success": False,
+                "error": unsupported_ticker_message(ticker),
+                "data": None,
+            }
+
         try:
             stock = yf.Ticker(ticker.upper())
             info = stock.info
@@ -86,6 +99,13 @@ class FinancialDataService:
         Returns:
             Dictionary containing financial statements or error information
         """
+        if not is_nasdaq_100_ticker(ticker):
+            return {
+                "success": False,
+                "error": unsupported_ticker_message(ticker),
+                "data": None,
+            }
+
         try:
             stock = yf.Ticker(ticker.upper())
 
@@ -139,6 +159,13 @@ class FinancialDataService:
         Returns:
             Dictionary containing recommendations or error information
         """
+        if not is_nasdaq_100_ticker(ticker):
+            return {
+                "success": False,
+                "error": unsupported_ticker_message(ticker),
+                "data": None,
+            }
+
         try:
             stock = yf.Ticker(ticker.upper())
             recommendations = stock.recommendations
@@ -281,6 +308,13 @@ class FinancialDataService:
         Returns:
             Dictionary containing historical data or error information
         """
+        if not is_nasdaq_100_ticker(ticker):
+            return {
+                "success": False,
+                "error": unsupported_ticker_message(ticker),
+                "data": None,
+            }
+
         try:
             stock = yf.Ticker(ticker.upper())
             history = stock.history(period=period)
@@ -322,6 +356,9 @@ class FinancialDataService:
         Returns:
             List of suggested peer ticker symbols
         """
+        if not is_nasdaq_100_ticker(ticker):
+            return []
+
         try:
             stock = yf.Ticker(ticker.upper())
             recommendations = stock.recommendations_summary
@@ -329,6 +366,7 @@ class FinancialDataService:
             if recommendations is not None and "recommended_tickers" in recommendations:
                 suggested_peers = [
                     item["symbol"] for item in recommendations["recommended_tickers"]
+                    if is_nasdaq_100_ticker(item.get("symbol"))
                 ][:max_peers]
                 return suggested_peers
 

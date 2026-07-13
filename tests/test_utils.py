@@ -80,7 +80,7 @@ class TestErrorHandling(unittest.TestCase):
         self.assertTrue(validate_ticker_symbol("AAPL"))
         self.assertTrue(validate_ticker_symbol("MSFT"))
         self.assertTrue(validate_ticker_symbol("GOOGL"))
-        self.assertTrue(validate_ticker_symbol("A"))  # Single letter is valid
+        self.assertFalse(validate_ticker_symbol("F"))  # Outside NASDAQ-100 scope
 
         # Invalid tickers
         self.assertFalse(validate_ticker_symbol(""))

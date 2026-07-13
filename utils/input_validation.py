@@ -6,6 +6,8 @@ import logging
 import re
 from typing import Any, Dict, List, Optional
 
+from utils.nasdaq_100 import is_nasdaq_100_ticker
+
 
 class InputValidator:
     """Handles validation of various user inputs."""
@@ -39,7 +41,7 @@ class InputValidator:
         invalid_tickers = []
 
         for ticker in tickers:
-            if self.is_valid_ticker_format(ticker):
+            if self.is_valid_ticker_format(ticker) and is_nasdaq_100_ticker(ticker):
                 valid_tickers.append(ticker.upper().strip())
             else:
                 invalid_tickers.append(ticker)
